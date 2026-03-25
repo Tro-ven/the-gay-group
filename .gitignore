@@ -1,0 +1,22 @@
+# Python Virtual Environment (Keep your 200MB folder off GitHub)
+.venv/
+venv/
+env/
+bin/
+lib/
+
+# Python Cache (Trash files created when you run bot.py)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SECRETS (EXTREMELY IMPORTANT)
+# We will put your Bot Token in a .env file so it never leaks
+.env
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# VS Code Settings
+.vscode/

@@ -1,0 +1,790 @@
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap');
+
+:root {
+    --neon-purple: #8e2de2;
+    --neon-red: #ff003c;
+    --neon-cyan: #00f2ff;
+    --gold: #ffcc00;
+    --lawyer-blue: #0066ff;
+    --dust-grey: #666666;
+    --dark-bg: #050505;
+}
+/* --- THE GLOWING SCROLLBAR --- */
+::-webkit-scrollbar {
+    width: 12px; /* Slightly wider for the gradient effect */
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border-left: 1px solid #1a1a1a; /* Subtle line separating it from the content */
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--neon-purple), var(--neon-cyan));
+    border-radius: 10px;
+    border: 3px solid var(--dark-bg); /* Creates a fake "padding" effect */
+    transition: 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--neon-cyan), var(--neon-purple));
+}
+
+body {
+    background-color: var(--dark-bg);
+    background: radial-gradient(circle at 50% -20%, #1a0b2e 0%, #050505 80%);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: scroll; /* Forces the vertical scrollbar track to stay visible */
+    min-height: 100vh;
+    animation: smoothLoad 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    cursor: crosshair;
+}
+body {
+    /* Add these to your existing body CSS */
+    -webkit-touch-callout: none; /* Disables the default iOS popup */
+    -webkit-user-select: none;   /* Safari */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* IE/Edge */
+    user-select: none;           /* Disables text selection highlighting */
+}
+
+@keyframes smoothLoad {
+    0% {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95); /* Starts lower and slightly smaller */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+/* NAVIGATION */
+nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: rgba(5, 5, 5, 0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #222;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    padding: 15px 0;
+    gap: 30px;
+}
+
+nav a {
+    color: #888;
+    text-decoration: none;
+    font-family: 'Syncopate', sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+nav a:hover, nav a.active { color: var(--neon-cyan); }
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+h1 {
+    font-family: 'Syncopate', sans-serif;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    letter-spacing: 5px;
+    margin: 0;
+    background: linear-gradient(to right, #fff, #444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+}
+
+/* GRID SYSTEM */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 100px;
+}
+
+/* CARDS */
+.card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 25px;
+    transition: 0.3s;
+    position: relative;
+}
+
+/* --- OVERRIDE DEFAULT HOVER --- */
+.card:hover {
+    background: #151515;
+    z-index: 10;
+}
+
+/* ==========================================
+   CUSTOM CHARACTER LORE ANIMATIONS
+========================================== */
+
+/* 1. VARUS (Violent Glitch) */
+@keyframes violent-glitch {
+    0% { translate: 0 0; filter: hue-rotate(0deg); }
+    20% { translate: -2px 2px; filter: hue-rotate(-50deg); }
+    40% { translate: -2px -2px; }
+    60% { translate: 2px 2px; }
+    80% { translate: 2px -2px; filter: hue-rotate(50deg); }
+    100% { translate: 0 0; filter: hue-rotate(0deg); }
+}
+.card.betrayer:hover {
+    animation: violent-glitch 0.2s infinite;
+    border-color: var(--neon-red);
+    box-shadow: 0 0 25px rgba(255, 0, 60, 0.6), inset 0 0 10px rgba(255, 0, 60, 0.3);
+}
+
+/* 2. KHUSRA SPECTER (Pathological Blur) */
+@keyframes path-liar {
+    0%, 100% { filter: blur(0px); }
+    50% { filter: blur(4px) drop-shadow(0 0 15px var(--lawyer-blue)); }
+}
+.card.lawyer:hover {
+    animation: path-liar 1.5s infinite;
+    border-color: var(--lawyer-blue);
+}
+
+/* 3. HUMANZALIEN (Rizz Death / Grayscale) */
+.card.failrizz:hover {
+    filter: grayscale(100%);
+    border-color: #444;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+    transition: filter 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* 4. RASPHARY (Kamchor Lag) */
+@keyframes lazy-load {
+    0% { box-shadow: 0 0 0 rgba(0,242,255,0); border-color: #222; }
+    70% { box-shadow: 0 0 0 rgba(0,242,255,0); border-color: #222; } /* Aalas */
+    100% { box-shadow: 0 15px 35px rgba(0,242,255,0.4); border-color: var(--neon-cyan); }
+}
+.card.dev:hover {
+    animation: lazy-load 2s forwards; /* Takes 2 seconds to actually glow */
+}
+
+/* 5. ESPADA (Cringe RGB Flash) */
+@keyframes rgb-cringe {
+    0% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; rotate: -1deg; }
+    33% { border-color: #00ff00; box-shadow: 0 0 20px #00ff00; rotate: 1deg; }
+    66% { border-color: #0000ff; box-shadow: 0 0 20px #0000ff; rotate: -1deg; }
+    100% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; rotate: 1deg; }
+}
+.card.cringe:hover {
+    animation: rgb-cringe 0.3s infinite;
+}
+
+/* 6. KIYANSH (Arthritis Shake) */
+@keyframes arthritis-shake {
+    0%, 100% { rotate: 0deg; box-shadow: 0 0 10px var(--gold); }
+    25% { rotate: 2deg; box-shadow: 0 0 30px var(--gold); }
+    75% { rotate: -2deg; box-shadow: 0 0 30px var(--gold); }
+}
+.card.unc:hover {
+    animation: arthritis-shake 0.5s infinite;
+    border-color: var(--gold);
+}
+
+/* 7. MUKAND (Ghost Mode) */
+.card.follower:hover {
+    opacity: 0.1; /* Disappears completely */
+    transition: opacity 0.3s ease-out;
+}
+
+/* MOBILE FIXES */
+@media (max-width: 768px) {
+    nav { gap: 15px; }
+    header { padding: 40px 10px; }
+}
+/* --- ADVANCED CARD STYLING (RPG LOOK) --- */
+.card {
+    text-align: left; /* Ensures text aligns exactly like the screenshot */
+    background: #111;
+}
+
+.card .status-label {
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.card .name {
+    font-family: 'Syncopate', sans-serif;
+    font-size: 1.6rem;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.card .title {
+    font-size: 0.75rem;
+    color: #888;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    display: block;
+}
+
+.stat-row {
+    margin-bottom: 15px;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    color: #555;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.stat-bar {
+    height: 4px;
+    background: #1a1a1a;
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+}
+
+.card .quote {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #777;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* --- SPECIFIC CHARACTER COLORS --- */
+.card.betrayer { border-color: var(--neon-red); }
+.card.betrayer .name { color: var(--neon-red); }
+.card.betrayer .stat-fill { background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
+
+.card.lawyer { border-color: var(--lawyer-blue); }
+.card.lawyer .name { color: var(--lawyer-blue); }
+.card.lawyer .stat-fill { background: var(--lawyer-blue); }
+
+.card.active { border-color: #333; }
+.card.active .name { color: #fff; }
+.card.active .stat-fill { background: #555; }
+
+.card.dev { border-color: var(--neon-cyan); }
+.card.dev .name { color: var(--neon-cyan); }
+.card.dev .stat-fill { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+
+.card.cringe { border-color: #333; }
+.card.cringe .name { color: #fff; }
+.card.cringe .stat-fill { background: #666; }
+
+.card.unc { border-color: var(--gold); }
+.card.unc .name { color: var(--gold); }
+.card.unc .stat-fill { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+
+.card.follower { border-color: var(--dust-grey); opacity: 0.7; }
+.card.follower .name { color: #fff; }
+.card.follower .stat-fill { background: var(--dust-grey); }
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.card.betrayer:hover {
+    animation: glitch 0.3s linear infinite;
+    border-color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+@keyframes pulse-gold {
+    0% { box-shadow: 0 0 5px rgba(255, 204, 0, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(255, 204, 0, 0.5); }
+    100% { box-shadow: 0 0 5px rgba(255, 204, 0, 0.2); }
+}
+
+.card.unc {
+    animation: pulse-gold 3s infinite;
+}
+/* Particle System CSS */
+.particle {
+    position: fixed;
+    /* Start them from the very bottom of the viewport, not the document */
+    top: 100vh; 
+    width: 4px;
+    height: 4px;
+    background-color: var(--neon-purple);
+    box-shadow: 0 0 10px var(--neon-purple);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    /* will-change tells the browser to optimize this specific animation on the GPU */
+    will-change: transform, opacity;
+    animation: floatUp linear forwards;
+}
+
+@keyframes floatUp {
+    0% { 
+        transform: translate3d(0, 0, 0) scale(0); /* translate3d forces GPU acceleration */
+        opacity: 0; 
+    }
+    10% { 
+        opacity: 0.8; 
+        transform: translate3d(0, -10vh, 0) scale(1.5); 
+    }
+    80% { 
+        opacity: 0.5; 
+    }
+    100% { 
+        transform: translate3d(0, -110vh, 0) scale(0.5); 
+        opacity: 0; 
+    }
+}
+/* Change the default cursor */
+body {
+    cursor: crosshair;
+}
+
+/* Make links and buttons have a "pointer" crosshair */
+a, .card {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%2300f2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>') 10 10, pointer;
+}
+/* --- CUSTOM RIGHT CLICK MENU --- */
+#custom-menu {
+    display: none;
+    position: absolute;
+    background: rgba(10, 10, 10, 0.95);
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+    border-radius: 8px;
+    width: 200px;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+#custom-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#custom-menu li {
+    padding: 12px 15px;
+    font-size: 0.8rem;
+    color: #ddd;
+    font-family: 'Syncopate', sans-serif;
+    cursor: pointer;
+    border-bottom: 1px solid #222;
+    transition: 0.2s;
+}
+
+#custom-menu li:last-child { border-bottom: none; }
+
+#custom-menu li:hover {
+    background: var(--neon-cyan);
+    color: #000;
+    font-weight: bold;
+}
+/* --- DEVELOPER TERMINAL --- */
+#terminal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100%; height: 50vh;
+    background: rgba(5, 5, 5, 0.98);
+    border-bottom: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Courier New', Courier, monospace;
+    z-index: 100000;
+    padding: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 20px 50px rgba(0, 255, 0, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+#terminal.active { 
+    display: flex; 
+    flex-direction: column; 
+    animation: dropDown 0.3s ease-out;
+}
+
+@keyframes dropDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+#terminal-output { 
+    flex-grow: 1; 
+    overflow-y: auto; 
+    margin-bottom: 10px; 
+    font-size: 0.9rem; 
+    line-height: 1.5; 
+}
+
+#terminal-output div { margin-bottom: 5px; }
+
+#terminal-input-line { display: flex; align-items: center; font-size: 0.9rem; }
+.prompt-text { color: #00f2ff; margin-right: 10px; font-weight: bold; }
+
+#terminal-input {
+    background: transparent; border: none; color: #00ff00;
+    font-family: 'Courier New', Courier, monospace; font-size: 0.9rem;
+    flex-grow: 1; outline: none;
+}
+
+/* Custom Output Colors */
+.term-error { color: #ff003c; }
+.term-success { color: #ffcc00; }
+/* ==========================================
+   KHUSRA SPECTER EASTER EGG (LAWSUIT)
+========================================== */
+#lawyer-popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #f4f4f4;
+    color: #111;
+    padding: 40px;
+    border: 8px solid var(--lawyer-blue);
+    z-index: 999999; /* Above everything */
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif; /* Fake legal font */
+    box-shadow: 0 0 100px rgba(0, 102, 255, 0.8), 0 0 0 100vw rgba(0,0,0,0.8);
+    width: 80%;
+    max-width: 500px;
+}
+
+#lawyer-popup.show {
+    display: block;
+    animation: slamDocument 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes slamDocument {
+    0% { transform: translate(-50%, -50%) scale(5); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+#lawyer-popup h1 {
+    color: #cc0000;
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    letter-spacing: 2px;
+    border-bottom: 3px solid #cc0000;
+    background: none;
+    -webkit-text-fill-color: #cc0000;
+}
+
+#lawyer-popup button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #cc0000;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+
+#lawyer-popup button:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+/* ==========================================
+   HUMANZALIEN EASTER EGG (FAIL RIZZ)
+========================================== */
+#rizz-popup {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 500px;
+    background: #1e1e24; /* Discord-ish dark */
+    border-radius: 20px;
+    border: 2px solid #333;
+    z-index: 999999;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 0 100vw rgba(0,0,0,0.8);
+    overflow: hidden;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+#rizz-popup.show { display: block; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+.chat-header {
+    background: #2b2d31; padding: 15px; text-align: center;
+    font-weight: bold; border-bottom: 1px solid #111;
+}
+
+.chat-box { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+
+.msg {
+    padding: 10px 15px; border-radius: 15px; max-width: 80%;
+    opacity: 0; animation: fadeInMsg 0.3s forwards;
+}
+
+.msg.sent { background: var(--neon-purple); align-self: flex-end; border-bottom-right-radius: 0; }
+.msg.received { background: #383a40; align-self: flex-start; border-bottom-left-radius: 0; }
+.msg.system { background: transparent; color: #ff003c; align-self: center; font-size: 0.8rem; font-weight: bold; text-align: center; }
+
+/* The brutal timing sequence */
+.msg:nth-child(1) { animation-delay: 0.5s; }
+.msg:nth-child(2) { animation-delay: 2.0s; }
+.msg:nth-child(3) { animation-delay: 3.5s; } /* Varus replies */
+.msg:nth-child(4) { animation-delay: 4.5s; } /* Blocked */
+
+@keyframes fadeInMsg { to { opacity: 1; transform: translateY(-5px); } }
+
+/* The GTA Wasted Text */
+#wasted-text {
+    position: absolute; top: 40%; width: 100%; text-align: center;
+    color: #ff003c; font-family: 'Syncopate', sans-serif; font-size: 2.5rem;
+    font-weight: bold; text-shadow: 2px 2px 0 #000;
+    opacity: 0; transform: scale(2) rotate(-10deg);
+}
+
+.show #wasted-text {
+    animation: wastedStamp 0.5s 5s forwards; /* Stamps down after 5 seconds */
+}
+
+@keyframes wastedStamp {
+    to { opacity: 1; transform: scale(1) rotate(-10deg); }
+}
+
+.close-rizz {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; border: none; padding: 8px 15px;
+    border-radius: 5px; cursor: pointer;
+}
+/* ==========================================
+   VARUS EASTER EGG (THE BLOCK SEQUENCE)
+========================================== */
+#varus-nuke {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(255, 0, 0, 0.1);
+    z-index: 9999999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Syncopate', sans-serif;
+    padding: 20px;
+    text-align: center;
+}
+
+#varus-nuke.active {
+    display: flex;
+    animation: ragePulse 0.5s infinite;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes ragePulse {
+    0% { background: rgba(255, 0, 0, 0.2); }
+    50% { background: rgba(255, 0, 60, 0.6); }
+    100% { background: rgba(255, 0, 0, 0.2); }
+}
+
+.nuke-text {
+    color: white;
+    font-size: clamp(1.5rem, 5vw, 3rem);
+    text-shadow: 0 0 20px red;
+    opacity: 0;
+}
+
+.nuke-subtext {
+    font-family: 'Space Grotesk', sans-serif;
+    color: #ccc;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    opacity: 0;
+}
+
+.nuke-btn {
+    margin-top: 40px;
+    padding: 15px 30px;
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    font-family: 'Syncopate', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.nuke-btn:hover {
+    background: white;
+    color: red;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+}
+
+/* Animation Timings */
+.phase-1 .nuke-text { animation: popInNuke 0.5s forwards; }
+.phase-2 .nuke-subtext { animation: popInNuke 0.5s forwards; }
+.phase-3 .nuke-btn { animation: popInNuke 0.5s forwards; }
+.phase-3 { 
+    background: black !important; 
+    animation: none !important; /* Stops the flashing once it's dead */
+}
+
+@keyframes popInNuke {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* The magic class that drops the website off the screen */
+.site-wiped body > *:not(#varus-nuke) {
+    animation: fallOff 2s forwards cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    pointer-events: none;
+}
+
+@keyframes fallOff {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(150vh) rotate(15deg); opacity: 0; }
+}
+/* ==========================================
+   MUKAND EASTER EGG (THE AMNESIA SNAP)
+========================================== */
+#system-toast {
+    position: fixed; 
+    top: 20px; 
+    right: -350px; /* Hidden off-screen by default */
+    width: 280px;
+    background: #111; 
+    border-left: 4px solid var(--dust-grey);
+    padding: 15px; 
+    color: #fff; 
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem; 
+    z-index: 999999;
+    transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    border-radius: 4px;
+}
+
+#system-toast.show {
+    right: 20px; /* Slides in */
+}
+
+.toast-header { 
+    font-size: 0.7rem; 
+    color: #888; 
+    margin-bottom: 8px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-family: 'Syncopate', sans-serif;
+}
+
+/* The Thanos Snap Animation */
+.fade-to-dust {
+    animation: dustSnap 2s forwards;
+    pointer-events: none; /* Stops you from clicking it while it dies */
+}
+
+@keyframes dustSnap {
+    0% { opacity: 1; filter: blur(0); transform: scale(1); }
+    40% { opacity: 0.5; filter: blur(5px); transform: scale(0.9) translateY(-10px); }
+    100% { opacity: 0; filter: blur(15px); transform: scale(0.5) translateY(-30px); display: none; }
+}
+/* ==========================================
+   ESPADA EASTER EGG (THE CR7 CURSE)
+========================================== */
+#espada-call {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px; height: 550px;
+    background: #111;
+    border-radius: 30px;
+    border: 4px solid #333;
+    z-index: 999999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 20px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+#espada-call.show {
+    display: flex;
+    animation: slideUpCall 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideUpCall {
+    from { transform: translate(-50%, 100vh); }
+    to { transform: translate(-50%, -50%); }
+}
+
+.caller-info { text-align: center; }
+.caller-pic {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, #ff0055, #0055ff);
+    border-radius: 50%; margin: 0 auto 20px auto;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem;
+}
+.caller-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 5px; color: #fff; }
+.caller-status { color: #00ffcc; font-size: 0.9rem; animation: pulseText 1.5s infinite; }
+
+@keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.call-buttons {
+    display: flex; gap: 40px; width: 100%; justify-content: center; position: relative;
+    height: 80px; /* Space for buttons */
+}
+
+.call-btn {
+    width: 70px; height: 70px; border-radius: 50%; border: none;
+    color: white; font-size: 1.5rem; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: 0.2s;
+}
+
+.btn-accept { background: #00cc44; box-shadow: 0 0 15px rgba(0, 204, 68, 0.5); }
+.btn-accept:hover { transform: scale(1.1); }
+
+/* The trick button */
+.btn-decline { 
+    background: #ff003c; box-shadow: 0 0 15px rgba(255, 0, 60, 0.5); 
+    position: absolute; right: 25px; /* Initial position */
+} 
+
+/* The SIIIUUU Flash */
+#sui-flash {
+    display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: black; color: white; z-index: 9999999;
+    align-items: center; justify-content: center;
+    font-family: 'Syncopate', sans-serif; font-size: 15vw; font-weight: bold;
+    font-style: italic; overflow: hidden;
+}
+
+#sui-flash.show {
+    display: flex;
+    animation: rgbCringe 0.1s infinite;
+}

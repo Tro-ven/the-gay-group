@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Roster | Squad Stats</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">The Arcs</a>
+        <a href="roster.html" class="active">The Roster</a>
+        <a href="shame.html">Wall of Shame</a>
+    </nav>
+
+    <header>
+        <h1>The Squad</h1>
+        <p style="color: #666; letter-spacing: 3px;">Choose Your Fighter</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="card lawyer">
+            <span class="status-label">Status: Delusional</span>
+            <h2 class="name">Khusra Specter</h2>
+            <span class="title">Fake Harvey Specter / Pathological Liar</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Honesty</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            
+            <p class="quote">"Law karega? Bada aya Harvey Specter banega, pehle 9th to finish kr, aur itna juth bolta ha ki kya hi bolu."</p>
+        </div>
+
+        <div class="card betrayer">
+            <span class="status-label">Status: Corrupted</span>
+            <h2 class="name">VARUS</h2>
+            <span class="title">Bilkul Betrayer / Ragebait Victim</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Stability</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 5%;"></div></div>
+            </div>
+            
+            <p class="quote">"Bhot jldi ragebait ho jati ha. The ultimate block-button user."</p>
+        </div>
+
+        <div class="card failrizz">
+            <span class="status-label">Status: Active</span>
+            <h2 class="name">HumanZalien</h2>
+            <span class="title">Professional Fail-Rizzler</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Success Rate</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            
+            <p class="quote">"Aaya bada Varus ko patane, ho gya na fail bsdk."</p>
+        </div>
+
+        <div class="card dev">
+            <span class="status-label">Status: Active</span>
+            <h2 class="name">Rasphary</h2>
+            <span class="title">Trash Baiter / Kamchor Dev</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Hero Ego</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 100%;"></div></div>
+            </div>
+            
+            <p class="quote">"Trash ragebait krta ha, zyada hero bnne ki koshish krta ha saala kamchor."</p>
+        </div>
+
+        <div class="card cringe">
+            <span class="status-label">Status: Cringe</span>
+            <h2 class="name">Espada de...</h2>
+            <span class="title">Ronaldo Simp / Cringe-Lord</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Originality</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 12%;"></div></div>
+            </div>
+            
+            <p class="quote">"Cringe ass name, Ronaldo ka rolund lele."</p>
+        </div>
+
+        <div class="card unc">
+            <span class="status-label">Status: Senior</span>
+            <h2 class="name">Kiyansh</h2>
+            <span class="title">The UNC Status / Ancient One</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Arthritis</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 85%;"></div></div>
+            </div>
+            
+            <p class="quote">"Currently at maximum UNC status. Oldest in the lobby."</p>
+        </div>
+
+        <div class="card follower">
+            <span class="status-label">Status: MIA</span>
+            <h2 class="name">Mukand</h2>
+            <span class="title">Muthland / Varus's Shadow</span>
+            
+            <div class="stat-row">
+                <span class="stat-label">Independence</span>
+                <div class="stat-bar"><div class="stat-fill" style="width: 0%;"></div></div>
+            </div>
+            
+            <p class="quote">"Muthland he ye, Varus gya = ye bhi chla."</p>
+        </div>
+
+    </div>
+    <script>
+    // This script makes the bars "fill up" when the page loads
+    window.onload = () => {
+        const fills = document.querySelectorAll('.stat-fill');
+        fills.forEach(fill => {
+            const finalWidth = fill.style.width;
+            fill.style.width = '0';
+            setTimeout(() => {
+                fill.style.transition = 'width 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                fill.style.width = finalWidth;
+            }, 100);
+        });
+    };
+</script>
+<script>
+    let docTitle = document.title;
+    window.addEventListener("blur", () => {
+        document.title = "Varus blocked you! 💀";
+    });
+    window.addEventListener("focus", () => {
+        document.title = docTitle;
+    });
+</script>
+<script>
+    // Aura Particle Spawner
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Randomize position, duration, and slight color variations
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDuration = Math.random() * 3 + 4 + 's';
+        
+        // Give some particles a cyan or gold glow randomly
+        const colors = ['var(--neon-purple)', 'var(--neon-cyan)', 'var(--gold)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.backgroundColor = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+
+        document.body.appendChild(particle);
+
+        // Remove the particle after it floats off screen
+        setTimeout(() => {
+            particle.remove();
+        }, 7000);
+    }
+
+    // Spawn a particle every 500ms
+    setInterval(createParticle, 500);
+</script>
+<script src="./main.js"></script>
+</body>
+</body>
+</html>

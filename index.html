@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Arcs | Group Lore</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="active">The Arcs</a>
+        <a href="roster.html">The Roster</a>
+        <a href="shame.html">Wall of Shame</a>
+    </nav>
+
+    <header>
+        <h1>The Eras</h1>
+        <p style="color: #666; letter-spacing: 3px;">Generational Brainrot Timeline</p>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="color: var(--neon-cyan);">Part 1: The Beta Test</h2>
+            <p class="lore-text">The OG group. Jab ye trash server start hua tha aur asli brainrot chalu hua. Sabse pehla kalesh yahin se shuru hua.</p>
+        </div>
+        
+        <div class="card" style="border-color: rgba(0, 242, 255, 0.3);">
+            <h2 style="color: var(--neon-cyan);">Part 1 S2: Expansion Pack</h2>
+            <p class="lore-text" style="border-color: var(--neon-cyan);">Jab humne aur chutyon ko chat mein add kiya. Mukand the muthland aur baaki NPCs ne aake peace kharab kar diya.</p>
+        </div>
+
+        <div class="card" style="border-color: rgba(255,0,60,0.3);">
+            <h2 style="color: var(--neon-red);">Part 2: Varus Incident</h2>
+            <p class="lore-text" style="border-color: var(--neon-red);">Jab Varus full bitch mode mein aagayi aur 1 mahine baad sabko block maar diya. Fucking ragebaiter. Uske lame ass ke bina naya chat banana pada.</p>
+        </div>
+        
+        <div class="card" style="border-color: rgba(255,204,0,0.3);">
+            <h2 style="color: var(--gold);">Part 2 S2: High School Arc</h2>
+            <p class="lore-text" style="border-color: var(--gold);">Right fucking now. Ab hum high school mein hain toh kalesh continue ho raha hai. Upar se wo cringe mf Espada bhi roster mein ghus gaya.</p>
+        </div>
+    </div>
+<script>
+    let docTitle = document.title;
+    window.addEventListener("blur", () => {
+        document.title = "Varus blocked you! 💀";
+    });
+    window.addEventListener("focus", () => {
+        document.title = docTitle;
+    });
+</script>
+<script>
+    // Aura Particle Spawner
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Randomize position, duration, and slight color variations
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.animationDuration = Math.random() * 3 + 4 + 's';
+        
+        // Give some particles a cyan or gold glow randomly
+        const colors = ['var(--neon-purple)', 'var(--neon-cyan)', 'var(--gold)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.backgroundColor = randomColor;
+        particle.style.boxShadow = `0 0 10px ${randomColor}`;
+
+        document.body.appendChild(particle);
+
+        // Remove the particle after it floats off screen
+        setTimeout(() => {
+            particle.remove();
+        }, 7000);
+    }
+
+    // Spawn a particle every 300ms
+    setInterval(createParticle, 500);
+</script>
+<div id="terminal">
+        <div id="terminal-output">
+            <div>[SYSTEM] Group Chat Archive OS v1.0</div>
+            <div style="color: #666;">Type 'help' for commands. Press '~' to close.</div>
+            <br>
+        </div>
+        <div id="terminal-input-line">
+            <span class="prompt-text">admin@gaygroup:~$</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+<script src="./main.js"></script>
+</body>
+</body>
+</html>
