@@ -1,121 +1,129 @@
 import discord
 from discord.ext import commands
-import json
 import os
-import subprocess
+import random
+import io
 from dotenv import load_dotenv
 from flask import Flask
 from threading import Thread
+from PIL import Image, ImageDraw, ImageFont
 
-# 1. THE "KEEP ALIVE" SERVER
+# ==========================================
+# 1. KEEP ALIVE SERVER (For Render)
+# ==========================================
 app = Flask('')
 
 @app.route('/')
 def home():
-    return "Bot is online and haunting the Wall of Shame."
+    return "GIF Bot is online and ready to deep-fry messages."
 
 def run_flask():
-    # Render uses port 8080 or 10000 usually; 0.0.0.0 is required for hosting
     app.run(host='0.0.0.0', port=8080)
 
 def keep_alive():
     t = Thread(target=run_flask)
     t.start()
 
-# 2. SETUP & SECRETS
+# ==========================================
+# 2. BOT SETUP
+# ==========================================
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-GITHUB_TOKEN = os.getenv('GITHUB_TOKEN') 
-REPO_URL = f"https://{GITHUB_TOKEN}@github.com/Tro-ven/the-gay-group.git"
 
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-DATA_FILE = 'shame_data.json'
-
-# 3. DATA HANDLERS
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return []
-    with open(DATA_FILE, 'r') as f:
-        return json.load(f)
-
-def save_data(data):
-    # Save locally
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data, f, indent=4)
-    
-    # AUTO-SYNC: Bulletproof Render Fix
-    if GITHUB_TOKEN:
-        try:
-            subprocess.run(["git", "config", "user.name", "Archive-Bot"], check=False)
-            subprocess.run(["git", "config", "user.email", "bot@archive.com"], check=False)
-            
-            # --- THE 3 NEW FIX LINES ---
-            subprocess.run(["git", "config", "pull.rebase", "false"], check=False) # Stops the merge panic
-            subprocess.run(["git", "checkout", "main"], check=False) # Gets out of "detached HEAD" state
-            
-            subprocess.run(["git", "pull", REPO_URL, "main", "--no-edit"], check=False)
-            subprocess.run(["git", "add", "shame_data.json"], check=False)
-            subprocess.run(["git", "commit", "-m", "chore: wall of shame update [skip ci]"], check=False)
-            subprocess.run(["git", "push", REPO_URL, "main"], check=False)
-            
-            print("Successfully synced to GitHub!")
-        except Exception as e:
-            print(f"Git Sync Error: {e}")
-
-# 4. COMMANDS
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
+    print('Wall of Shame deleted. GIF mode activated.')
 
+# ==========================================
+# 3. TEXT WRAPPER (So text doesn't go off screen)
+# ==========================================
+def wrap_text(text, font, max_width, draw):
+    lines = []
+    words = text.split()
+    while words:
+        line = ''
+        # Keep adding words until the line is too wide
+        while words and draw.textlength(line + words[0], font=font) <= max_width:
+            line += (words.pop(0) + ' ')
+        lines.append(line)
+    return lines
+
+# ==========================================
+# 4. THE "AYO" GIF COMMAND
+# ==========================================
 @bot.command()
 async def ayo(ctx):
-    if ctx.message.reference:
-        replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        data = load_data()
+    if not ctx.message.reference:
+        await ctx.send("Bro, reply to a message to deep-fry it into a GIF!")
+        return
+
+    replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+    text = replied_msg.content
+    
+    if not text:
+        await ctx.send("I can only animate text right now. Words only.")
+        return
+
+    # Let the chat know it's cooking
+    loading_msg = await ctx.send("Deep frying this message... 🍳")
+
+    try:
+        frames = []
+        # Neon RGB colors for maximum brainrot
+        colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255)]
+        font = ImageFont.load_default()
         
-        if any(item['id'] == replied_msg.id for item in data):
-            await ctx.send("This L is already recorded. 💀")
-            return
-
-        # Check for images/attachments
-        image_url = None
-        if replied_msg.attachments:
-            # Grab the first attachment if it's an image
-            attachment = replied_msg.attachments[0]
-            if any(attachment.filename.lower().endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif', 'webp']):
-                image_url = attachment.url
-
-        new_entry = {
-            "id": replied_msg.id,
-            "author": str(replied_msg.author.display_name),
-            "content": replied_msg.content,
-            "image_url": image_url, # New field!
-            "timestamp": replied_msg.created_at.strftime("%Y-%m-%d %H:%M")
-        }
+        # Base Canvas Size (Small so it looks pixelated/crusty when scaled)
+        width, height = 250, 150 
         
-        data.append(new_entry)
-        save_data(data)
-        await ctx.send(f"Added to the Wall of Shame with evidence. ✅")
-    else:
-        await ctx.send("Reply to a message to archive the brainrot!")
+        # Dummy draw object just to calculate text wrapping
+        dummy_img = Image.new('RGB', (1, 1))
+        dummy_draw = ImageDraw.Draw(dummy_img)
+        
+        # Format the text with quotes and their name
+        formatted_text = f'"{text}"\n- {replied_msg.author.display_name}'
+        wrapped_lines = wrap_text(formatted_text, font, width - 20, dummy_draw)
 
-@bot.command()
-async def notayo(ctx):
-    if ctx.message.reference:
-        msg_id = ctx.message.reference.message_id
-        data = load_data()
-        original_count = len(data)
-        data = [item for item in data if item['id'] != msg_id]
-        if len(data) < original_count:
-            save_data(data)
-            await ctx.send("L removed. They got lucky. 🛡️")
-        else:
-            await ctx.send("That message isn't in the archive.")
+        # Generate 10 frames of chaotic shaking
+        for i in range(10):
+            img = Image.new('RGB', (width, height), color=(15, 15, 15)) # Dark gray background
+            draw = ImageDraw.Draw(img)
+            
+            color = random.choice(colors)
+            
+            # The "Shake" math (moves the text randomly by a few pixels)
+            offset_x = random.randint(-4, 4)
+            offset_y = random.randint(-4, 4)
+            
+            y_text = 20 + offset_y
+            for line in wrapped_lines:
+                draw.text((10 + offset_x, y_text), line, font=font, fill=color)
+                y_text += 15 # Line height
+            
+            # Scale it up 2x so it looks like a crusty 2012 meme
+            img = img.resize((width * 2, height * 2), Image.NEAREST)
+            frames.append(img)
 
-# 5. START THE BOT
+        # Save the frames directly to memory (no files cluttering your PC)
+        buffer = io.BytesIO()
+        frames[0].save(buffer, format='GIF', save_all=True, append_images=frames[1:], duration=50, loop=0)
+        buffer.seek(0)
+
+        # Send the GIF back to Discord and delete the loading message
+        await ctx.send(file=discord.File(fp=buffer, filename="ayo.gif"))
+        await loading_msg.delete()
+
+    except Exception as e:
+        await ctx.send(f"The deep fryer broke: {e}")
+
+# ==========================================
+# 5. START BOT
+# ==========================================
 if __name__ == "__main__":
-    keep_alive() # Starts the web server in a background thread
+    keep_alive()
     bot.run(TOKEN)
