@@ -545,7 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 // ==========================================
-// 10. LIVE SHAME FEED (FROM DISCORD BOT)
+// 10. LIVE SHAME FEED (FROM DISCORD BOT) WITH IMAGES
 // ==========================================
 async function loadShameData() {
     const display = document.getElementById('shame-display');
@@ -568,12 +568,19 @@ async function loadShameData() {
         data.reverse().forEach(entry => { // .reverse() puts newest first
             const card = document.createElement('div');
             card.className = 'card';
+            
+            // --- NEW IMAGE LOGIC ADDED HERE ---
+            const imageHTML = entry.image_url 
+                ? `<img src="${entry.image_url}" class="shame-img" alt="Evidence">` 
+                : '';
+
             card.innerHTML = `
                 <span class="status-label">Busted on ${entry.timestamp}</span>
                 <h3 class="name" style="color: var(--neon-cyan);">${entry.author}</h3>
                 <p class="quote" style="border-top: none; padding-top: 0; font-size: 1.1rem; color: #eee;">
                     "${entry.content}"
                 </p>
+                ${imageHTML}
                 <div style="font-size: 0.6rem; color: #444; margin-top: 10px;">ID: ${entry.id}</div>
             `;
             display.appendChild(card);

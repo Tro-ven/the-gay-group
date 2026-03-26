@@ -66,18 +66,30 @@ async def ayo(ctx):
     if ctx.message.reference:
         replied_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         data = load_data()
+        
         if any(item['id'] == replied_msg.id for item in data):
             await ctx.send("This L is already recorded. 💀")
             return
+
+        # Check for images/attachments
+        image_url = None
+        if replied_msg.attachments:
+            # Grab the first attachment if it's an image
+            attachment = replied_msg.attachments[0]
+            if any(attachment.filename.lower().endswith(ext) for ext in ['png', 'jpg', 'jpeg', 'gif', 'webp']):
+                image_url = attachment.url
+
         new_entry = {
             "id": replied_msg.id,
             "author": str(replied_msg.author.display_name),
             "content": replied_msg.content,
+            "image_url": image_url, # New field!
             "timestamp": replied_msg.created_at.strftime("%Y-%m-%d %H:%M")
         }
+        
         data.append(new_entry)
         save_data(data)
-        await ctx.send(f"Added to the Wall of Shame. ✅")
+        await ctx.send(f"Added to the Wall of Shame with evidence. ✅")
     else:
         await ctx.send("Reply to a message to archive the brainrot!")
 
