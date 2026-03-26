@@ -1,546 +1,484 @@
-// ==========================================
-// 1. DYNAMIC 3D CARD TILT (MOUSE & TOUCH)
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    const cards = document.querySelectorAll('.card');
+    
+    // --- Vanilla Tilt Initialization ---
+    // Will be initialized automatically by the data-tilt attribute if the library is loaded, 
+    // but we can ensure it's loaded properly.
 
-    cards.forEach(card => {
-        // Desktop Mouse Movement
-        card.addEventListener('mousemove', handleMove);
-        // Mobile Touch Movement
-        card.addEventListener('touchmove', (e) => {
-            handleMove(e.touches[0], card); // Pass the first finger touch
+    // --- WebAudio API SFX ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+    function playSfx(type) {
+        if(!audioCtx) { try { audioCtx = new AudioContext(); } catch(e) { return; } }
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+
+        if(type === 'objection') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+            gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        } else if(type === 'rocket-up') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(800, now + 1.5);
+            gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.3, now + 0.5); gain.gain.linearRampToValueAtTime(0, now + 1.5);
+            osc.start(now); osc.stop(now + 1.5);
+        } else if(type === 'rocket-slam') {
+            osc.type = 'square'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(20, now + 0.5);
+            gain.gain.setValueAtTime(0.8, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        } else if(type === 'nuke') {
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(80, now); osc.frequency.linearRampToValueAtTime(20, now + 2);
+            gain.gain.setValueAtTime(1, now); gain.gain.linearRampToValueAtTime(0.01, now + 2);
+            osc.start(now); osc.stop(now + 2);
+        } else if(type === 'sleep') {
+            osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(100, now + 2);
+            gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 2);
+            osc.start(now); osc.stop(now + 2);
+        } else if(type === 'error') {
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(150, now); osc.frequency.setValueAtTime(100, now + 0.1);
+            gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now); osc.stop(now + 0.3);
+        }
+    }
+
+    // --- Interactive Space Dust Engine ---
+    const bgContainer = document.querySelector('.premium-bg');
+    if(bgContainer) {
+        const particles = [];
+        const numParticles = 60;
+        for(let i=0; i<numParticles; i++) {
+            const p = document.createElement('div');
+            p.className = 'space-dust';
+            const size = Math.random() * 2 + 1;
+            p.style.width = size + 'px'; p.style.height = size + 'px';
+            bgContainer.appendChild(p);
+            particles.push({
+                el: p, x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+        let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+        window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateParticles() {
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                const dx = p.x - mouseX, dy = p.y - mouseY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if(dist < 150) {
+                    const force = (150 - dist) / 150;
+                    p.x += (dx / dist) * force * 5;
+                    p.y += (dy / dist) * force * 5;
+                }
+                if(p.x < 0) p.x = window.innerWidth; if(p.x > window.innerWidth) p.x = 0;
+                if(p.y < 0) p.y = window.innerHeight; if(p.y > window.innerHeight) p.y = 0;
+                p.el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+    }
+
+    // --- Terminal Typewriter Effect ---
+    const typeTargets = document.querySelectorAll('.lore-text, .quote');
+    const typeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                const el = entry.target;
+                if(!el.dataset.typed) {
+                    el.dataset.typed = 'true';
+                    const text = el.dataset.originalText || el.textContent;
+                    el.textContent = '';
+                    el.classList.add('typewriter-text');
+                    let i = 0;
+                    function typeChar() {
+                        if(i < text.length) {
+                            el.textContent += text.charAt(i); i++;
+                            setTimeout(typeChar, Math.random() < 0.1 ? 60 : 15);
+                        } else { el.classList.remove('typewriter-text'); }
+                    }
+                    setTimeout(typeChar, 300);
+                }
+            }
+        });
+    }, { threshold: 0.1 });
+    typeTargets.forEach(target => {
+        target.dataset.originalText = target.textContent;
+        target.textContent = ''; 
+        typeObserver.observe(target);
+    });
+
+    // --- 1. Rasphary (The AFK Dev - Sleep Mode) ---
+    const raspharyCard = document.querySelector('.dev');
+    if(raspharyCard) {
+        let isSleeping = false;
+        raspharyCard.addEventListener('dblclick', () => {
+            if(isSleeping) return;
+            isSleeping = true;
+            
+            playSfx('sleep');
+            raspharyCard.classList.add('sleep-mode');
+            
+            const statusEl = raspharyCard.querySelector('.card-status');
+            const fillEl = raspharyCard.querySelector('.ego-fill');
+            const indicator = raspharyCard.querySelector('.status-indicator');
+            const quoteEl = raspharyCard.querySelector('.quote');
+            
+            if(statusEl) statusEl.innerText = 'STATUS: ZZZ...';
+            if(fillEl) fillEl.style.width = '0%';
+            if(indicator) indicator.style.background = '#333';
+            if(quoteEl) quoteEl.innerText = '"I\'ll fix the code tomorrow... maybe."';
+
+            // Zzz particles
+            setInterval(() => {
+                const zzz = document.createElement('div');
+                zzz.className = 'zzz-particle';
+                zzz.innerText = 'Zzz';
+                zzz.style.left = (40 + Math.random() * 40) + '%';
+                zzz.style.top = '20%';
+                raspharyCard.appendChild(zzz);
+                setTimeout(() => zzz.remove(), 2000);
+            }, 600);
+        });
+    }
+
+    // --- 2. Khusra (The Pathological Liar - Ace Attorney Objection) ---
+    const khusraCard = document.querySelector('.lawyer');
+    if(khusraCard) {
+        let slammed = false;
+        khusraCard.addEventListener('click', () => {
+            if(slammed) return;
+            slammed = true;
+            
+            playSfx('objection');
+            
+            // Show the Ace Attorney SVG Starburst overlay
+            const objScreen = document.getElementById('aa-objection');
+            if(objScreen) objScreen.classList.remove('hidden');
+            
+            // Shake the entire screen
+            document.body.classList.add('shake-screen');
+            
+            setTimeout(() => {
+                document.body.classList.remove('shake-screen');
+                
+                // Keep the objection screen up for a bit, then hide
+                setTimeout(() => {
+                    if(objScreen) objScreen.classList.add('hidden');
+                    
+                    // Expose the lies in typical lore fashion
+                    const quoteText = khusraCard.querySelector('.quote');
+                    if(quoteText) {
+                        quoteText.style.color = '#ef4444';
+                        quoteText.style.borderColor = '#ef4444';
+                        quoteText.innerText = '"OBJECTION! That\'s hearsay! I am literally the Harvey Specter of this group!"';
+                    }
+                }, 1500);
+            }, 500); // Matches screen shake duration
+        });
+    }
+
+    // --- 3. Varus (The Instigator - The Meltdown) ---
+    const varusCard = document.querySelector('.betrayer');
+    if(varusCard) {
+        let rage = 0;
+        let lastX = 0, lastY = 0;
+        let lastTime = Date.now();
+        const rageFill = varusCard.querySelector('.rage-fill');
+        const rageMeter = varusCard.querySelector('.rage-meter');
+        let hasMelted = false;
+
+        varusCard.addEventListener('pointerenter', () => { if(!hasMelted) rageMeter.classList.remove('hidden'); });
+        varusCard.addEventListener('pointerleave', () => { 
+            if(hasMelted) return;
+            rageMeter.classList.add('hidden'); 
+            rage = 0; 
+            rageFill.style.width='0%'; 
+        });
+        
+        varusCard.addEventListener('pointermove', (e) => {
+            if(hasMelted) return;
+            const now = Date.now();
+            const dt = now - lastTime;
+            if (dt === 0) return;
+
+            let dist = Math.sqrt(Math.pow(e.clientX - lastX, 2) + Math.pow(e.clientY - lastY, 2));
+            let speed = dist / dt; // pixels per ms
+
+            // If mouse moves frantically
+            if(speed > 1.5) {
+                rage += speed * 3; // Fill up based on vigorous shaking
+                if(rage > 100) rage = 100;
+                rageFill.style.width = rage + '%';
+                
+                if(rage >= 100) {
+                    hasMelted = true;
+                    nukeSequence();
+                    rageMeter.classList.add('hidden');
+                }
+            }
+            lastX = e.clientX;
+            lastY = e.clientY;
+            lastTime = now;
         });
 
-        function handleMove(event, targetCard = card) {
-            const rect = targetCard.getBoundingClientRect();
-            const x = event.clientX - rect.left; 
-            const y = event.clientY - rect.top;  
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -10; 
-            const rotateY = ((x - centerX) / centerX) * 10;
+        // Decrease rage over time if not moving
+        setInterval(() => {
+            if(rage > 0 && !hasMelted) { 
+                rage -= 5; 
+                rageFill.style.width = Math.max(0, rage) + '%'; 
+            }
+        }, 100);
+    }
 
-            targetCard.style.transform = `perspective(1000px) scale(1.05) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            targetCard.style.transition = "none"; 
+    function nukeSequence() {
+        playSfx('nuke');
+        if(varusCard.vanillaTilt) varusCard.vanillaTilt.destroy();
+        document.body.classList.add('nuke-active');
+        
+        // Massive Banned Stamp
+        const stamp = document.createElement('div');
+        stamp.className = 'objection-stamp objection-slam';
+        stamp.innerText = 'BANNED';
+        varusCard.appendChild(stamp);
+        
+        // Set on fire
+        varusCard.classList.add('on-fire');
+        varusCard.querySelector('.quote').innerText = '"I\'VE BEEN PERMANENTLY BANNED FOR INSTIGATING!!!"';
+    }
+
+    // --- 4. Espada (The CR7 Fan - Hang Time) ---
+    const espadaCard = document.querySelector('.cringe');
+    if(espadaCard) {
+        let triggered = false;
+        const statContainer = espadaCard.querySelector('.stat-container');
+
+        if(statContainer) {
+            statContainer.style.cursor = 'pointer';
+            statContainer.addEventListener('click', () => {
+                if(triggered) return;
+                triggered = true;
+                
+                if(espadaCard.vanillaTilt) espadaCard.vanillaTilt.destroy();
+                
+                playSfx('rocket-up');
+                
+                // Rocket Up
+                espadaCard.classList.add('rocket-up');
+                
+                setTimeout(() => {
+                    playSfx('rocket-slam');
+                    
+                    // Slam down
+                    espadaCard.classList.remove('rocket-up');
+                    espadaCard.classList.add('rocket-slam');
+                    
+                    // Show SIU overlay
+                    const overlay = document.getElementById('siu-overlay');
+                    if(overlay) overlay.classList.remove('hidden');
+                    
+                    document.body.classList.add('shake-screen');
+                    
+                    setTimeout(() => {
+                        espadaCard.classList.remove('rocket-slam');
+                        document.body.classList.remove('shake-screen');
+                        if(overlay) overlay.classList.add('hidden');
+                        
+                        // Start hover transition listener to re-apply VanillaTilt if needed, 
+                        // but it's okay to just leave it off if it has already been launched.
+                        triggered = false; 
+                    }, 2000);
+                }, 1500); // 1.5s hang time
+            });
         }
+    }
 
-        // Reset when mouse/finger leaves
-        const resetCard = () => {
-            card.style.transform = `perspective(1000px) scale(1) rotateX(0deg) rotateY(0deg)`;
-            card.style.transition = "transform 0.5s ease";
+    // --- 5. HumanZalien (Aura Repellent - 3s Hover/Hold) ---
+    const hzCard = document.querySelector('.failrizz');
+    if(hzCard) {
+        let holdTimeout;
+        
+        const triggerAura = () => {
+            document.querySelectorAll('.card').forEach(c => {
+                if(c !== hzCard) {
+                    // Calculate vector away from hzCard
+                    const hzRect = hzCard.getBoundingClientRect();
+                    const cRect = c.getBoundingClientRect();
+                    const dx = cRect.left - hzRect.left;
+                    const dy = cRect.top - hzRect.top;
+                    const distance = Math.max(10, Math.sqrt(dx*dx + dy*dy));
+                    
+                    const moveX = (dx / distance) * 100;
+                    const moveY = (dy / distance) * 100;
+                    
+                    c.style.transform = `translate(${moveX}px, ${moveY}px) scale(0.8)`;
+                    c.classList.add('shrink-away');
+                }
+            });
         };
 
-        card.addEventListener('mouseleave', resetCard);
-        card.addEventListener('touchend', resetCard);
-    });
+        const clearAura = () => {
+            clearTimeout(holdTimeout);
+            document.querySelectorAll('.card').forEach(c => {
+                c.style.transform = '';
+                c.classList.remove('shrink-away');
+            });
+        };
 
-    // ==========================================
-    // 2. THE SECRET "UNC" CHEAT CODE
-    // ==========================================
-    const activateUNCMode = () => {
-        alert("⚠️ UNC MODE ACTIVATED: Maximum Arthritis Achieved ⚠️");
-        document.documentElement.style.setProperty('--neon-purple', '#ffcc00');
-        document.documentElement.style.setProperty('--neon-cyan', '#ffcc00');
-        document.body.style.filter = "sepia(0.5)";
-    };
+        hzCard.addEventListener('pointerenter', () => { holdTimeout = setTimeout(triggerAura, 2000); });
+        hzCard.addEventListener('pointerleave', clearAura);
+        
+        hzCard.addEventListener('touchstart', () => { holdTimeout = setTimeout(triggerAura, 2000); });
+        hzCard.addEventListener('touchend', clearAura);
+        hzCard.addEventListener('touchcancel', clearAura);
+    }
 
-    // Desktop: Type 'u' 'n' 'c'
-    let secretCode = "";
-    document.addEventListener('keydown', (e) => {
-        secretCode += e.key.toLowerCase();
-        if (secretCode.length > 3) secretCode = secretCode.substring(1);
-        if (secretCode === "unc") activateUNCMode();
-    });
+    // --- 6. Kiyansh (The Unc - Elderly Mode) ---
+    const kiyanshCard = document.querySelector('.unc');
+    if(kiyanshCard) {
+        let isElderly = false;
+        const statContainer = kiyanshCard.querySelector('.stat-container');
+        
+        if(statContainer) {
+            statContainer.style.cursor = 'pointer';
+            statContainer.addEventListener('click', () => {
+                if(isElderly) return;
+                isElderly = true;
+                
+                playSfx('error');
+                kiyanshCard.classList.add('elderly-mode');
+                
+                const quoteText = kiyanshCard.querySelector('.quote');
+                if(quoteText) {
+                    quoteText.innerText = '"Back in my day, we didn\'t have these fancy glass panels... can I get a senior discount?"';
+                }
+            });
+        }
+    }
 
-    // Mobile: Tap the main Header 5 times quickly
-    let tapCount = 0;
-    let tapTimer;
-    const headers = document.querySelectorAll('h1');
-    
-    headers.forEach(header => {
-        header.addEventListener('click', () => {
-            tapCount++;
-            clearTimeout(tapTimer);
+    // --- 7. Mukand (The Literal Follower) ---
+    const mukandCard = document.getElementById('mukand-card');
+    if(mukandCard) {
+        let isFollowing = false;
+        
+        mukandCard.addEventListener('click', (e) => {
+            if(isFollowing) return;
+            isFollowing = true;
             
-            // If they don't tap again within 1.5 seconds, reset the counter
-            tapTimer = setTimeout(() => { tapCount = 0; }, 1500); 
+            // Kill tilt so it doesn't fight our fixed transform updates
+            if(mukandCard.vanillaTilt) mukandCard.vanillaTilt.destroy();
             
-            if (tapCount === 5) {
-                activateUNCMode();
-                tapCount = 0; // Reset after activation
-            }
+            // Keep original geometry for seamless breakout
+            const rect = mukandCard.getBoundingClientRect();
+            mukandCard.style.width = rect.width + 'px';
+            mukandCard.style.height = rect.height + 'px';
+            mukandCard.style.left = '0px'; 
+            mukandCard.style.top = '0px';
+            mukandCard.style.transform = `translate(${rect.left}px, ${rect.top}px)`;
+            
+            // Allow a tiny frame delay so the inline styles apply before !important CSS shrinks it
+            setTimeout(() => {
+                mukandCard.classList.add('literal-follower', 'dog-mode');
+                mukandCard.innerHTML = '🐕';
+                
+                // Make him perfectly track the cursor cleanly as a small dog
+                window.addEventListener('mousemove', (ev) => {
+                    mukandCard.style.transform = `translate(${ev.clientX + 15}px, ${ev.clientY + 15}px) scale(1)`;
+                });
+            }, 10);
+        });
+    }
+
+    // --- Premium Spotlight Effect ---
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('pointermove', e => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
         });
     });
-});
 
-// ==========================================
-// 3. CUSTOM RIGHT-CLICK / LONG PRESS MENU
-// ==========================================
-const customMenu = document.createElement('div');
-customMenu.id = "custom-menu";
-customMenu.innerHTML = `
-    <ul>
-        <li onclick="alert('Snitching to Varus...')">Report to Varus 💀</li>
-        <li onclick="alert('Aura +10,000')">Steal Aura ✨</li>
-        <li onclick="location.reload()">Refresh Matrix 🔄</li>
-    </ul>
-`;
-document.body.appendChild(customMenu);
+    // --- Smooth Page Transitions ---
+    document.querySelectorAll('.navbar a').forEach(link => {
+        link.addEventListener('click', e => {
+            const targetUrl = link.getAttribute('href');
+            // Don't animate if clicking exactly where we are
+            if (targetUrl === window.location.pathname.split('/').pop() || targetUrl === '#') return;
+            
+            e.preventDefault(); // Stop immediate jump
+            
+            // Fade out the content smoothly
+            const container = document.querySelector('.container');
+            const header = document.querySelector('header');
+            if(container) container.classList.add('page-exit');
+            if(header) header.classList.add('page-exit');
+            
+            // Navigate after animation plays
+            setTimeout(() => {
+                window.location.href = targetUrl;
+            }, 350); 
+        });
+    });
 
-document.addEventListener("contextmenu", (e) => {
-    e.preventDefault(); 
-    customMenu.style.display = "block";
-    
-    let x = e.pageX;
-    let y = e.pageY;
-    if (x + 200 > window.innerWidth) x = window.innerWidth - 200;
-    
-    customMenu.style.left = `${x}px`;
-    customMenu.style.top = `${y}px`;
-});
+    // --- Interactive Arcs Timeline (index.html) ---
+    const varusArc = document.querySelector('.varus-arc');
+    const premiumBg = document.querySelector('.premium-bg');
+    if(varusArc && premiumBg) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    premiumBg.classList.add('bg-red-alert');
+                } else {
+                    premiumBg.classList.remove('bg-red-alert');
+                }
+            });
+        }, { threshold: 0.75 });
+        observer.observe(varusArc);
+    }
 
-document.addEventListener("click", () => {
-    customMenu.style.display = "none";
-});
-
-// ==========================================
-// 4. THE DEVELOPER TERMINAL (EASTER EGG)
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    const terminal = document.getElementById('terminal');
-    const termInput = document.getElementById('terminal-input');
-    const termOutput = document.getElementById('terminal-output');
-
-    if(!terminal) return; // Failsafe agar kisi page pe HTML na ho
-
-    // Toggle Terminal with ` or ~ key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === '`' || e.key === '~') {
+    // --- Anti-Light Mode Easter Egg ---
+    const themeToggle = document.getElementById('theme-toggle');
+    if(themeToggle) {
+        let toggleBroken = false;
+        themeToggle.addEventListener('click', (e) => {
             e.preventDefault();
-            terminal.classList.toggle('active');
-            if (terminal.classList.contains('active')) {
-                termInput.focus();
+            if(toggleBroken) return;
+            toggleBroken = true;
+            
+            playSfx('error');
+            themeToggle.classList.add('broken-button');
+            
+            let toast = document.getElementById('toast-container');
+            if(!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-container';
+                document.body.appendChild(toast);
             }
-        }
-    });
-
-    // Handle Commands when pressing Enter
-    termInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const command = termInput.value.trim().toLowerCase();
-            if (command !== '') {
-                printOutput(`admin@gaygroup:~$ ${command}`);
-                processCommand(command);
-            }
-            termInput.value = ''; // clear input field
-        }
-    });
-
-    function printOutput(text, className = '') {
-        const line = document.createElement('div');
-        line.innerText = text;
-        if (className) line.classList.add(className);
-        termOutput.appendChild(line);
-        termOutput.scrollTop = termOutput.scrollHeight; // Auto-scroll to bottom
+            toast.innerHTML = '⚠️ "The Gay Group" does not belong in the Light.';
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        });
     }
 
-    // Command Processor
-    function processCommand(cmd) {
-        const args = cmd.split(' ');
-        const baseCmd = args[0];
-
-        switch(baseCmd) {
-            case 'help':
-                printOutput("AVAILABLE COMMANDS:");
-                printOutput("  reveal logs   : Exposes hidden group chat lore.");
-                printOutput("  ban [name]    : Permanently deletes a member's card (until refresh).");
-                printOutput("  unblock all   : Attempts to bypass Varus's firewall.");
-                printOutput("  clear         : Clears the terminal output.");
-                break;
-            case 'clear':
-                termOutput.innerHTML = '';
-                printOutput("[SYSTEM] Group Chat Archive OS v1.0");
-                printOutput("Type 'help' for commands. Press '~' to close.");
-                break;
-            case 'reveal':
-                if (args[1] === 'logs') {
-                    const logs = [
-                        "Log #142: Mukand spotted shadow-following Varus again.",
-                        "Log #88: Espada sent another cringe Ronaldo reel.",
-                        "Log #12: Khusra lied about his rank again. Shocking.",
-                        "Log #01: The Beta Test server was purely unfiltered chaos."
-                    ];
-                    printOutput(logs[Math.floor(Math.random() * logs.length)], 'term-success');
-                } else {
-                    printOutput("Usage: reveal logs", 'term-error');
+    // --- Secret Code Trigger ("VARUS") ---
+    let keyBuffer = '';
+    window.addEventListener('keydown', (e) => {
+        keyBuffer += e.key.toUpperCase();
+        if(keyBuffer.length > 5) keyBuffer = keyBuffer.slice(-5);
+        
+        if(keyBuffer === 'VARUS') {
+            playSfx('nuke');
+            document.body.classList.add('nuke-active');
+            const overlay = document.getElementById('nuke-overlay');
+            if(overlay) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('active');
+                if(!overlay.innerHTML.includes('ADMIN OVERRIDE')) {
+                    overlay.innerHTML += `<p style="color:#fff; margin-top: 20px;">ADMIN OVERRIDE DETECTED.</p>`;
                 }
-                break;
-            case 'unblock':
-                if (args[1] === 'all') {
-                    printOutput("ERROR: Varus's ego is too large to bypass the firewall.", 'term-error');
-                } else {
-                    printOutput("Usage: unblock all", 'term-error');
-                }
-                break;
-            case 'ban':
-                if (!args[1]) {
-                    printOutput("Usage: ban [name]", 'term-error');
-                } else {
-                    const target = args[1];
-                    const cards = document.querySelectorAll('.card');
-                    let found = false;
-                    
-                    // Search for the card containing the name
-                    cards.forEach(card => {
-                        if (card.innerText.toLowerCase().includes(target)) {
-                            card.style.display = 'none'; // Kicks them off the screen
-                            found = true;
-                        }
-                    });
-                    
-                    if (found) {
-                        printOutput(`[SUCCESS] '${target}' has been YEETED from the server.`, 'term-success');
-                    } else {
-                        printOutput(`[ERROR] User '${target}' not found. Are they already gone?`, 'term-error');
-                    }
-                }
-                break;
-            default:
-                printOutput(`bash: ${baseCmd}: command not found. Type 'help'.`, 'term-error');
-        }
-    }
-});
-// ==========================================
-// 5. THE KHUSRA "FAKE LAWYER" EASTER EGG
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Create the Lawsuit HTML dynamically
-    const lawsuitPopup = document.createElement('div');
-    lawsuitPopup.id = "lawyer-popup";
-    lawsuitPopup.innerHTML = `
-        <h1>CEASE & DESIST</h1>
-        <h3 style="margin: 0 0 20px 0;">FROM THE DESK OF HARVY SPECTER</h3>
-        <p><b>WARNING:</b> U are being sued for 10 million dollars.</p>
-        <p><b>Reason:</b> Defamation and putting me on the Wall of Shame without my permission.</p>
-        <p>See u in court bro.</p>
-        <br>
-        <p style="color: #666; font-size: 0.75rem; font-style: italic;">(Please delete this bro my mom checks my phone and I have unit tests tomorrow)</p>
-        <button id="dismiss-lawsuit">Dismiss Case</button>
-    `;
-    document.body.appendChild(lawsuitPopup);
-
-    // 2. Logic to close the popup
-    document.getElementById('dismiss-lawsuit').addEventListener('click', () => {
-        lawsuitPopup.classList.remove('show');
-    });
-
-    // 3. Trigger Function
-    const triggerLawsuit = () => {
-        lawsuitPopup.classList.add('show');
-    };
-
-    // 4. DESKTOP TRIGGER: Type 's' 'u' 'e'
-    let sueCode = "";
-    document.addEventListener('keydown', (e) => {
-        // Only track letters, and ignore if terminal is open
-        if(e.key.length === 1 && !document.getElementById('terminal').classList.contains('active')) {
-            sueCode += e.key.toLowerCase();
-            if (sueCode.length > 3) sueCode = sueCode.substring(1);
-            if (sueCode === "sue") triggerLawsuit();
-        }
-    });
-
-    // 5. MOBILE TRIGGER: Tap Khusra's card 3 times fast
-    const khusraCard = document.querySelector('.card.lawyer');
-    if (khusraCard) {
-        let khusraTapCount = 0;
-        let khusraTapTimer;
-        
-        khusraCard.addEventListener('click', () => {
-            khusraTapCount++;
-            clearTimeout(khusraTapTimer);
-            
-            // Reset tap count if they wait longer than 1 second
-            khusraTapTimer = setTimeout(() => { khusraTapCount = 0; }, 1000); 
-            
-            if (khusraTapCount === 3) {
-                triggerLawsuit();
-                khusraTapCount = 0; // Reset after it pops up
             }
-        });
-    }
-});
-// ==========================================
-// 6. HUMANZALIEN "FAIL RIZZ" EASTER EGG
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    // Create the Chat HTML dynamically
-    const rizzPopup = document.createElement('div');
-    rizzPopup.id = "rizz-popup";
-    rizzPopup.innerHTML = `
-        <div class="chat-header">Chat with Varus 💀</div>
-        <div class="chat-box">
-            <div class="msg sent">Hey Varus...</div>
-            <div class="msg sent">Are you a keyboard? Because you are exactly my type. 😉</div>
-            <div class="msg received">Ew. Wtf.</div>
-            <div class="msg system">You cannot send messages to this user. You have been blocked.</div>
-        </div>
-        <div id="wasted-text">RIZZ FAILED</div>
-        <button class="close-rizz" id="dismiss-rizz">Tap to Respawn</button>
-    `;
-    document.body.appendChild(rizzPopup);
-
-    document.getElementById('dismiss-rizz').addEventListener('click', () => {
-        rizzPopup.classList.remove('show');
-    });
-
-    const triggerFailRizz = () => {
-        // Need to clone and replace to reset CSS animations every time it opens
-        const oldBox = document.querySelector('.chat-box');
-        const newBox = oldBox.cloneNode(true);
-        oldBox.parentNode.replaceChild(newBox, oldBox);
-        
-        rizzPopup.classList.add('show');
-    };
-
-    // DESKTOP TRIGGER: Type 'r' 'i' 'z' 'z'
-    let rizzCode = "";
-    document.addEventListener('keydown', (e) => {
-        if(e.key.length === 1 && !document.getElementById('terminal')?.classList.contains('active')) {
-            rizzCode += e.key.toLowerCase();
-            if (rizzCode.length > 4) rizzCode = rizzCode.substring(1);
-            if (rizzCode === "rizz") triggerFailRizz();
+            keyBuffer = '';
         }
     });
 
-    // MOBILE TRIGGER: Tap HumanZalien's card 3 times fast
-    const humanCard = document.querySelector('.card.failrizz');
-    if (humanCard) {
-        let humanTapCount = 0;
-        let humanTapTimer;
-        
-        humanCard.addEventListener('click', () => {
-            humanTapCount++;
-            clearTimeout(humanTapTimer);
-            
-            humanTapTimer = setTimeout(() => { humanTapCount = 0; }, 1000); 
-            
-            if (humanTapCount === 3) {
-                triggerFailRizz();
-                humanTapCount = 0;
-            }
-        });
-    }
-});
-// ==========================================
-// 7. VARUS "THE GREAT BLOCK" EASTER EGG
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Create the Nuke Screen dynamically
-    const varusNuke = document.createElement('div');
-    varusNuke.id = "varus-nuke";
-    varusNuke.innerHTML = `
-        <div class="nuke-text">FATAL ERROR: SERVER WIPED.</div>
-        <div class="nuke-subtext">Varus got ragebaited and blocked everyone. The lore is gone.</div>
-        <button class="nuke-btn" onclick="location.reload()">CREATE PART 2 (REBOOT)</button>
-    `;
-    document.body.appendChild(varusNuke);
-
-    // 2. The Destruction Sequence
-    const triggerVarusRage = () => {
-        // Drop the actual website off the screen
-        document.body.classList.add('site-wiped');
-        
-        // Start the red flashing error screen
-        varusNuke.classList.add('active', 'phase-1');
-        
-        // Sequence the text appearing
-        setTimeout(() => { varusNuke.classList.add('phase-2'); }, 1500);
-        setTimeout(() => { varusNuke.classList.add('phase-3'); }, 3500);
-    };
-
-    // 3. DESKTOP TRIGGER: Type 'b' 'l' 'o' 'c' 'k'
-    let blockCode = "";
-    document.addEventListener('keydown', (e) => {
-        if(e.key.length === 1 && !document.getElementById('terminal')?.classList.contains('active')) {
-            blockCode += e.key.toLowerCase();
-            if (blockCode.length > 5) blockCode = blockCode.substring(1);
-            if (blockCode === "block") triggerVarusRage();
-        }
-    });
-
-    // 4. MOBILE TRIGGER: Tap Varus's card 3 times fast
-    const varusCard = document.querySelector('.card.betrayer');
-    if (varusCard) {
-        let varusTapCount = 0;
-        let varusTapTimer;
-        
-        varusCard.addEventListener('click', () => {
-            varusTapCount++;
-            clearTimeout(varusTapTimer);
-            
-            varusTapTimer = setTimeout(() => { varusTapCount = 0; }, 1000); 
-            
-            if (varusTapCount === 3) {
-                triggerVarusRage();
-                varusTapCount = 0;
-            }
-        });
-    }
-});
-// ==========================================
-// 8. MUKAND "WHO?" EASTER EGG
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Create the System Toast dynamically
-    const toast = document.createElement('div');
-    toast.id = 'system-toast';
-    toast.innerHTML = `
-        <div class="toast-header">System Notification</div>
-        <div id="toast-msg" style="line-height: 1.4; color: #aaa;"></div>
-    `;
-    document.body.appendChild(toast);
-
-    // 2. The Vanish Sequence
-    const triggerMukandVanish = () => {
-        const mukandCard = document.querySelector('.card.follower');
-        
-        // If the card doesn't exist or is already dusted, do nothing
-        if(!mukandCard || mukandCard.classList.contains('fade-to-dust')) return;
-
-        // Slide in the notification
-        const msg = document.getElementById('toast-msg');
-        msg.innerHTML = "Query: <span style='color: #fff;'>'Mukand'</span>...<br><br><span style='color: var(--neon-red);'>Error 404:</span> Entity only exists when Varus is present. Erasing from cache...";
-        toast.classList.add('show');
-
-        // Snap the card out of existence after reading the message
-        setTimeout(() => {
-            mukandCard.classList.add('fade-to-dust');
-        }, 1500);
-
-        // Hide the notification banner
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 6000);
-    };
-
-    // 3. DESKTOP TRIGGER: Type 'w' 'h' 'o'
-    let whoCode = "";
-    document.addEventListener('keydown', (e) => {
-        if(e.key.length === 1 && !document.getElementById('terminal')?.classList.contains('active')) {
-            whoCode += e.key.toLowerCase();
-            if (whoCode.length > 3) whoCode = whoCode.substring(1);
-            if (whoCode === "who") triggerMukandVanish();
-        }
-    });
-
-    // 4. MOBILE TRIGGER: Tap Mukand's card 3 times fast
-    const mukandCard = document.querySelector('.card.follower');
-    if (mukandCard) {
-        let mukandTapCount = 0;
-        let mukandTapTimer;
-        
-        mukandCard.addEventListener('click', () => {
-            mukandTapCount++;
-            clearTimeout(mukandTapTimer);
-            
-            mukandTapTimer = setTimeout(() => { mukandTapCount = 0; }, 1000); 
-            
-            if (mukandTapCount === 3) {
-                triggerMukandVanish();
-                mukandTapCount = 0;
-            }
-        });
-    }
-});
-// ==========================================
-// 9. ESPADA "THE CR7 CURSE" EASTER EGG
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. Create the Call Screen
-    const espadaCall = document.createElement('div');
-    espadaCall.id = "espada-call";
-    espadaCall.innerHTML = `
-        <div class="caller-info">
-            <div class="caller-pic">🐐</div>
-            <div class="caller-name">Cristiano Ronaldo</div>
-            <div class="caller-status">Incoming FaceTime...</div>
-        </div>
-        <div class="call-buttons">
-            <button class="call-btn btn-accept" id="accept-call">📞</button>
-            <button class="call-btn btn-decline" id="decline-call">📵</button>
-        </div>
-        <div style="color: #666; font-size: 0.7rem;">(Espada forwarded this to you)</div>
-    `;
-    document.body.appendChild(espadaCall);
-
-    // 2. Create the SUIII Flash overlay
-    const suiFlash = document.createElement('div');
-    suiFlash.id = "sui-flash";
-    suiFlash.innerText = "SIIIUUU";
-    document.body.appendChild(suiFlash);
-
-    // 3. The "Un-Clickable" Decline Button Logic
-    const declineBtn = document.getElementById('decline-call');
-    
-    const dodgeCursor = () => {
-        // Move the button to a random spot within the call popup
-        const x = Math.random() * (espadaCall.clientWidth - 70) - (espadaCall.clientWidth / 2 - 35);
-        const y = Math.random() * -300; // Moves it upwards randomly
-        declineBtn.style.transform = `translate(${x}px, ${y}px)`;
-    };
-
-    // Works for both mouse and touch
-    declineBtn.addEventListener('mouseover', dodgeCursor);
-    declineBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Stop the tap
-        dodgeCursor();
-    });
-
-    // 4. Accept Call Logic (The Punishment)
-    document.getElementById('accept-call').addEventListener('click', () => {
-        espadaCall.classList.remove('show');
-        suiFlash.classList.add('show');
-        
-        // Hide the flash after 2 seconds
-        setTimeout(() => {
-            suiFlash.classList.remove('show');
-        }, 2000);
-    });
-
-    const triggerEspadaCall = () => {
-        declineBtn.style.transform = `translate(0px, 0px)`; // Reset position
-        espadaCall.classList.add('show');
-    };
-
-    // 5. DESKTOP TRIGGER: Type 's' 'u' 'i' 'i'
-    let suiCode = "";
-    document.addEventListener('keydown', (e) => {
-        if(e.key.length === 1 && !document.getElementById('terminal')?.classList.contains('active')) {
-            suiCode += e.key.toLowerCase();
-            if (suiCode.length > 4) suiCode = suiCode.substring(1);
-            if (suiCode === "suii") triggerEspadaCall();
-        }
-    });
-
-    // 6. MOBILE TRIGGER: Tap Espada's card 3 times fast
-    const espadaCard = document.querySelector('.card.cringe');
-    if (espadaCard) {
-        let espadaTapCount = 0;
-        let espadaTapTimer;
-        
-        espadaCard.addEventListener('click', () => {
-            espadaTapCount++;
-            clearTimeout(espadaTapTimer);
-            
-            espadaTapTimer = setTimeout(() => { espadaTapCount = 0; }, 1000); 
-            
-            if (espadaTapCount === 3) {
-                triggerEspadaCall();
-                espadaTapCount = 0;
-            }
-        });
-    }
 });

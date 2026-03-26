@@ -3,100 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Roster | THE GAY GROUP</title>
-    <link rel="stylesheet" href="style.css">
+    <title>The Roster | Squad Stats</title>
+    <!-- Modern fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <div class="premium-bg">
+        <div class="glow-sphere"></div>
+        <div class="glow-sphere secondary"></div>
+        <div class="grid-floor"></div>
+    </div>
+    
+    <!-- Secret Overlays -->
+    <div id="aa-objection" class="hidden">
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="objection-svg">
+          <path d="M200 20 L230 60 L300 25 L270 80 L360 70 L290 110 L370 150 L270 140 L230 180 L190 140 L150 180 L120 140 L20 160 L100 110 L30 70 L120 80 L100 25 L170 60 Z" fill="#ffffff" stroke="#000000" stroke-width="4" stroke-linejoin="miter"/>
+          <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" font-family="'Impact', 'Arial Black', sans-serif" font-size="75" font-weight="bold" font-style="italic" fill="#ff0000" stroke="#000000" stroke-width="4" transform="rotate(-12, 200, 100)">OBJECTION!</text>
+          <text x="50%" y="55%" text-anchor="middle" dominant-baseline="middle" font-family="'Impact', 'Arial Black', sans-serif" font-size="75" font-weight="bold" font-style="italic" fill="#ff0000" stroke="none" transform="rotate(-12, 200, 100)">OBJECTION!</text>
+        </svg>
+    </div>
+
+    <div id="nuke-overlay" class="hidden">
+        <h1 class="nuke-text">BLOCKED. 💀</h1>
+    </div>
+
+    <div id="siu-overlay" class="hidden">
+        <h1 class="siu-text">SIUUUUUUU 🐐</h1>
+    </div>
+    
     <nav class="navbar">
-        <a href="index.html">Home</a>
+        <a href="index.html">The Arcs</a>
         <a href="roster.html" class="active">The Roster</a>
     </nav>
+    <button id="theme-toggle" title="Toggle Light Mode">☀️</button>
 
-    <div class="container">
-        <h1 style="text-align: center; color: var(--neon-cyan); margin-bottom: 40px; text-shadow: 0 0 10px var(--neon-cyan);">
-            CLASSIFIED ASSETS
-        </h1>
+    <div class="container content" id="main-content">
+        <header>
+            <h1 class="hero-title">CLASSIFIED ASSETS</h1>
+            <p class="subtitle-text">Choose Your Fighter</p>
+        </header>
 
         <div class="roster-grid">
-            
-            <div class="card betrayer">
-                <div class="profile-header">
-                    <div class="avatar">💀</div>
-                    <div class="titles">
-                        <h2 style="color: var(--neon-red);">Varus</h2>
-                        <span class="role">The Firewall / Server Nuke</span>
+            <!-- Rasphary -->
+            <div class="card dev glass-panel drag-card" style="--theme: #00f2ff;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: ACTIVE</div>
+                <h2 class="name">Rasphary</h2>
+                <div class="subtitle">Trash Baiter / Kamchor Dev</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">HERO EGO</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill ego-fill" style="width: 100%;"></div>
                     </div>
                 </div>
-                <div class="stats">
-                    <div class="stat-box"><span class="label">Aura</span> <span class="value">Maximum</span></div>
-                    <div class="stat-box"><span class="label">Patience</span> <span class="value" style="color: red;">0%</span></div>
+
+                <div class="quote">
+                    "Trash ragebait krta ha, zyada hero bnne ki koshish krta ha saala kamchor."
                 </div>
-                <p class="lore">Known to ragebait easily. Will block you if you breathe wrong. Do not attempt to rizz.</p>
             </div>
 
-            <div class="card cringe">
-                <div class="profile-header">
-                    <div class="avatar">🐐</div>
-                    <div class="titles">
-                        <h2 style="color: var(--neon-cyan);">Espada</h2>
-                        <span class="role">Ronaldo Propagandist</span>
+            <!-- Khusra -->
+            <div class="card lawyer glass-panel" style="--theme: #0066ff;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: DELUSIONAL</div>
+                <h2 class="name">Khusra Specter</h2>
+                <div class="subtitle">Fake Harvey Specter / Pathological Liar</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">HONESTY</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 0%;"></div>
                     </div>
                 </div>
-                <div class="stats">
-                    <div class="stat-box"><span class="label">Aura</span> <span class="value">-5,000</span></div>
-                    <div class="stat-box"><span class="label">Reels Sent</span> <span class="value">Too Many</span></div>
+
+                <div class="quote quote-protected">
+                    "Law karega? Bada aya Harvey Specter banega, pehle 9th to finish kr, aur itna juth bolta ha ki kya hi bolu."
                 </div>
-                <p class="lore">The hollow inside has awakened. Communicates exclusively through CR7 edits.</p>
             </div>
 
-            <div class="card lawyer">
-                <div class="profile-header">
-                    <div class="avatar">⚖️</div>
-                    <div class="titles">
-                        <h2 style="color: var(--neon-purple);">Khusra</h2>
-                        <span class="role">Fake Lawyer / Rank Liar</span>
+            <!-- Varus -->
+            <div class="card betrayer glass-panel" style="--theme: #ff003c;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator alert-pulse"></div>
+                <div class="status card-status">STATUS: CORRUPTED</div>
+                <h2 class="name">VARUS</h2>
+                <div class="subtitle">Bilkul Betrayer / Ragebait Victim</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">STABILITY</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 5%;"></div>
                     </div>
                 </div>
-                <div class="stats">
-                    <div class="stat-box"><span class="label">Lawsuits</span> <span class="value">Active</span></div>
-                    <div class="stat-box"><span class="label">Real Rank</span> <span class="value">Bronze II</span></div>
+
+                <div class="quote">
+                    "Bhot jldi ragebait ho jati ha. The ultimate block-button user."
                 </div>
-                <p class="lore">Will hit you with a Cease & Desist if he takes an L. His mom checks his phone.</p>
+                <!-- Shake progress overlay -->
+                <div class="rage-meter hidden">
+                    <div class="rage-fill"></div>
+                </div>
             </div>
 
-            <div class="card failrizz">
-                <div class="profile-header">
-                    <div class="avatar">👽</div>
-                    <div class="titles">
-                        <h2 style="color: #00ff88;">HumanZalien</h2>
-                        <span class="role">The Rizzless Wonder</span>
+            <!-- Espada -->
+            <div class="card cringe glass-panel" style="--theme: #aa00ff;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: CRINGE</div>
+                <h2 class="name">Espada de...</h2>
+                <div class="subtitle">Ronaldo Simp / Cringe-Lord</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">ORIGINALITY</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 12%;"></div>
                     </div>
                 </div>
-                <div class="stats">
-                    <div class="stat-box"><span class="label">Rizz Level</span> <span class="value" style="color: red;">Negative</span></div>
-                    <div class="stat-box"><span class="label">Block Status</span> <span class="value">Frequent</span></div>
+
+                <div class="quote">
+                    "Cringe ass name, Ronaldo ka rolund lele."
                 </div>
-                <p class="lore">Tried to flirt with a keyboard. Failed. Frequently found in Varus's block list.</p>
             </div>
 
-            <div class="card follower">
-                <div class="profile-header">
-                    <div class="avatar">👻</div>
-                    <div class="titles">
-                        <h2 style="color: #aaa;">Mukand</h2>
-                        <span class="role">The Shadow</span>
+            <!-- HumanZalien -->
+            <div class="card failrizz glass-panel" style="--theme: #00ff66;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: ACTIVE</div>
+                <h2 class="name">HumanZalien</h2>
+                <div class="subtitle">Professional Fail-Rizzler</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">SUCCESS RATE</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 0%;"></div>
                     </div>
                 </div>
-                <div class="stats">
-                    <div class="stat-box"><span class="label">Visibility</span> <span class="value">Low</span></div>
-                    <div class="stat-box"><span class="label">Independence</span> <span class="value">0%</span></div>
+
+                <div class="quote">
+                    "Aaya bada Varus ko patane, ho gya na fail bsdk."
                 </div>
-                <p class="lore">Only exists when Varus is online. If Varus goes offline, Mukand fades from reality.</p>
+            </div>
+
+            <!-- Kiyansh -->
+            <div class="card unc glass-panel" style="--theme: #ffcc00;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: SENIOR</div>
+                <h2 class="name">Kiyansh</h2>
+                <div class="subtitle">The UNC Status / Ancient One</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">ARTHRITIS</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+
+                <div class="quote">
+                    "Currently at maximum UNC status. Oldest in the lobby."
+                </div>
+            </div>
+
+            <!-- Mukand -->
+            <div class="card follower glass-panel" id="mukand-card" style="--theme: #888888;" data-tilt data-tilt-glare data-tilt-max-glare="0.5">
+                <div class="status-indicator"></div>
+                <div class="status card-status">STATUS: MIA</div>
+                <h2 class="name">Mukand</h2>
+                <div class="subtitle">Muthland / Varus's Shadow</div>
+                
+                <div class="stat-container">
+                    <div class="stat-label">INDEPENDENCE</div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="quote">
+                    "Muthland he ye, Varus gya = ye bhi chla."
+                </div>
             </div>
 
         </div>
     </div>
 
-    <script src="main.js"></script>
+    <!-- Vanilla Tilt for 3D effect -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="./main.js"></script>
 </body>
 </html>
