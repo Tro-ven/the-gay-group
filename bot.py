@@ -42,14 +42,20 @@ def load_data():
         return json.load(f)
 
 def save_data(data):
+    # Save locally
     with open(DATA_FILE, 'w') as f:
         json.dump(data, f, indent=4)
     
+    # AUTO-SYNC: Pulls latest code first, then pushes the new L
     if GITHUB_TOKEN:
         try:
-            subprocess.run(["git", "add", "shame_data.json"], check=True)
             subprocess.run(["git", "config", "user.name", "Archive-Bot"], check=True)
             subprocess.run(["git", "config", "user.email", "bot@archive.com"], check=True)
+            
+            # --- THE FIX: Pull from GitHub before pushing to prevent rejection ---
+            subprocess.run(["git", "pull", REPO_URL, "main", "--no-edit"], check=False)
+            
+            subprocess.run(["git", "add", "shame_data.json"], check=True)
             subprocess.run(["git", "commit", "-m", "chore: wall of shame update [skip ci]"], check=True)
             subprocess.run(["git", "push", REPO_URL, "main"], check=True)
             print("Successfully synced to GitHub!")
