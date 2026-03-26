@@ -52,12 +52,16 @@ def save_data(data):
             subprocess.run(["git", "config", "user.name", "Archive-Bot"], check=True)
             subprocess.run(["git", "config", "user.email", "bot@archive.com"], check=True)
             
-            # --- THE FIX: Pull from GitHub before pushing to prevent rejection ---
+            # 1. Pull the latest from GitHub
             subprocess.run(["git", "pull", REPO_URL, "main", "--no-edit"], check=False)
             
+            # 2. Add and Commit the new JSON data
             subprocess.run(["git", "add", "shame_data.json"], check=True)
             subprocess.run(["git", "commit", "-m", "chore: wall of shame update [skip ci]"], check=True)
-            subprocess.run(["git", "push", REPO_URL, "main"], check=True)
+            
+            # 3. THE FIX: Push the exact current state (HEAD) directly into main
+            subprocess.run(["git", "push", REPO_URL, "HEAD:main"], check=True)
+            
             print("Successfully synced to GitHub!")
         except Exception as e:
             print(f"Git Sync Error: {e}")
